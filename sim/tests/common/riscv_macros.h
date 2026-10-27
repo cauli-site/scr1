@@ -102,9 +102,8 @@
 #define INTERRUPT_HANDLER j other_exception /* No interrupts should occur */
 
 #define RVTEST_CODE_BEGIN                                               \
-        .section .text.init;                                            \
-        .org 0xC0, 0x00;                                                \
-        .balign  64;                                                    \
+        .section .trap_vector,"ax";                                    \
+        .balign  4;                                                     \
         .weak stvec_handler;                                            \
         .weak mtvec_handler;                                            \
 trap_vector:                                                            \
@@ -117,6 +116,22 @@ trap_vector:                                                            \
         li a5, CAUSE_MACHINE_ECALL;                                     \
         beq a4, a5, _report;                                            \
         /* if an mtvec_handler is defined, jump to it */                \
+        /* print breakbreak for breakpoint exception */                \
+        csrr a4, mcause;                                                \
+        li a5, CAUSE_BREAKPOINT;                                        \
+        bne a4, a5, 2f;                                                 \
+        li t0, 0xf0000000;                                              \
+        li t1, 'b'; sb t1, 0(t0);                                       \
+        li t1, 'r'; sb t1, 0(t0);                                       \
+        li t1, 'e'; sb t1, 0(t0);                                       \
+        li t1, 'a'; sb t1, 0(t0);                                       \
+        li t1, 'k'; sb t1, 0(t0);                                       \
+        li t1, 'b'; sb t1, 0(t0);                                       \
+        li t1, 'r'; sb t1, 0(t0);                                       \
+        li t1, 'e'; sb t1, 0(t0);                                       \
+        li t1, 'a'; sb t1, 0(t0);                                       \
+        li t1, 'k'; sb t1, 0(t0);                                       \
+2:      /* continue exception dispatch */                               \
         la a4, mtvec_handler;                                           \
         beqz a4, 1f;                                                    \
         jr a4;                                                          \
@@ -131,6 +146,7 @@ other_exception:                                                        \
         li   a0, 0x1;                                                   \
 _report:                                                                \
         j sc_exit;                                                      \
+        .section .text.init,"ax";                                       \
         .balign  64;                                                    \
         .globl _start;                                                  \
 _start:                                                                 \

@@ -22,9 +22,9 @@ localparam                          SCR1_MEM_SIZE       = 1024*1024;
 localparam                          TIMEOUT             = 'd2000_000;//20ms;
 localparam                          ARCH                = 'h1;
 localparam                          COMPLIANCE          = 'h2;
-localparam                          ADDR_START          = 'h200;
-localparam                          ADDR_TRAP_VECTOR    = 'h240;
-localparam                          ADDR_TRAP_DEFAULT   = 'h1C0;
+localparam                          ADDR_START          = 'h400;
+localparam                          ADDR_TRAP_VECTOR    = 'hA00;
+localparam                          ADDR_TRAP_DEFAULT   = 'hA00;
 
 //-------------------------------------------------------------------------------
 // Local signal declaration
